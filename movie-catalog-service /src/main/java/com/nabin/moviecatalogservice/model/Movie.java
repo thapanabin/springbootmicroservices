@@ -4,6 +4,14 @@ public class Movie {
     private String movieId;
     private String name;
 
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "movieId='" + movieId + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
     public Movie() {
     }
 
