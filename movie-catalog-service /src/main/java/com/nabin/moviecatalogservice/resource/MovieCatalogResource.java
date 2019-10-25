@@ -4,6 +4,7 @@ import com.nabin.moviecatalogservice.model.CatalogItem;
 import com.nabin.moviecatalogservice.model.Movie;
 import com.nabin.moviecatalogservice.model.Rating;
 import com.nabin.moviecatalogservice.model.UserRating;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class MovieCatalogResource {
     @Autowired
     private WebClient.Builder webClientBuilder;
     @RequestMapping("/{userId}")
+    @HystrixCommand(fallbackMethod = "getFallbackCatalog")
     public List<CatalogItem> getCatalog(@PathVariable("userId") String userId){
        // WebClient.Builder builder = WebClient.builder();
         UserRating ratings = restTemplate.getForObject("http://movie-rating-service/ratingsdata/"+userId, UserRating.class);
@@ -44,5 +46,9 @@ public class MovieCatalogResource {
         })
                 .collect(Collectors.toList());
 
+    }
+
+    public List<CatalogItem> getFallbackCatalog(@PathVariable("userId") String userId){
+        return Arrays.asList(new CatalogItem("No movie","",0));
     }
 }
